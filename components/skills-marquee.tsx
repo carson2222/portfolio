@@ -25,7 +25,6 @@ const skills: Skill[] = [
   { name: "HTML", src: "/marquee/html.png" },
   { name: "AWS", src: "/marquee/aws.png" },
   { name: "ExpressJS", src: "/marquee/express.png" },
-
   { name: "Solana", src: "/marquee/solana.png" },
   { name: "PostgreSQL", src: "/marquee/postgresql.png" },
   { name: "MySQL", src: "/marquee/mysql.png" },
@@ -34,16 +33,15 @@ const skills: Skill[] = [
   { name: "ShdwDrive", src: "/marquee/shdwdrive.png" },
   { name: "Jest", src: "/marquee/jest.png" },
   { name: "Metaplex", src: "/marquee/metaplex.png" },
-
   { name: "Telegram", src: "/marquee/telegram.png" },
   { name: "Discord", src: "/marquee/discord.png" },
   { name: "OpenAI", src: "/marquee/OpenAI.png" },
   { name: "ai16z", src: "/marquee/ai16z.png" },
   { name: "Shadcn", src: "/marquee/shadcn.png" },
   { name: "Redux", src: "/marquee/redux.png" },
-
   { name: "WebSockets", src: "/marquee/websocket.png" },
   { name: "Docker", src: "/marquee/docker.png" },
+  { name: "RestAPI", src: "/marquee/restapi.png" },
 ];
 
 export default function SkillsMarquee() {

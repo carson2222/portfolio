@@ -36,7 +36,7 @@ export default function Hero() {
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 text-center z-10">
         <motion.h1
-          className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 flex"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold pb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 flex"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -46,7 +46,7 @@ export default function Hero() {
           xperiences
         </motion.h1>
         <motion.p
-          className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-muted-foreground"
+          className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-muted-foreground mt-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
