@@ -49,7 +49,7 @@ export default function About() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">Code, Coffee & Constant Learning </p>
+          <p className="text-muted-foreground max-w-2xl mx-auto">Code, Coffee & Constant Learning</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
@@ -63,8 +63,8 @@ export default function About() {
               <CardContent className="pt-6">
                 <h3 className="text-2xl font-semibold mb-4">My Journey</h3>
                 <p className="text-muted-foreground mb-4">
-                  Technology has been my passion since childhood—I’ve practically lived and breathed it 24/7. From
-                  an early age, I was fascinated by IT and programming, but it wasn’t until high school that I
+                  Technology has been my passion since childhood—I've practically lived and breathed it 24/7. From
+                  an early age, I was fascinated by IT and programming, but it wasn't until high school that I
                   fully immersed myself in this field. What started as a pursuit of good grades quickly turned into
                   something much bigger: a genuine drive to learn and create.
                 </p>
@@ -95,24 +95,32 @@ export default function About() {
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-2xl font-semibold mb-6 flex items-center justify-center gap-2">
-              My Strengths <BicepsFlexed />
-            </h3>
-            <div className="space-y-8">
-              {strengths.map((item, index) => (
-                <div key={index} className="relative">
-                  <div className="flex items-start gap-4">
-                    {/* <div className="min-w-[60px] text-sm font-medium text-primary">{item.year}</div> */}
-                    <Dot size={32} />
-                    <div>
-                      <h4 className="text-lg font-medium">{item.title}</h4>
-                      <p className="text-muted-foreground mt-1">{item.description}</p>
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-full">
+              <CardContent className="pt-6">
+                <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+                  My Strengths <BicepsFlexed className="text-primary" />
+                </h3>
+                <div className="space-y-6">
+                  {strengths.map((item, index) => (
+                    <div key={index} className="group">
+                      <div className="flex items-start gap-4">
+                        <div className="relative mt-1">
+                          <div className="absolute inset-0 bg-primary/10 rounded-full translate-x-0 translate-y-0 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform" />
+                          <Dot size={28} className="relative text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-medium text-foreground">{item.title}</h4>
+                          <p className="text-muted-foreground mt-2 leading-relaxed">{item.description}</p>
+                        </div>
+                      </div>
+                      {index < strengths.length - 1 && (
+                        <Separator className="my-4 bg-border/30 group-hover:bg-primary/30 transition-colors" />
+                      )}
                     </div>
-                  </div>
-                  {index < strengths.length - 1 && <Separator className="my-4 bg-border/50" />}
+                  ))}
                 </div>
-              ))}
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </div>
