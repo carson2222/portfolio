@@ -45,9 +45,13 @@ export default function Contact() {
   };
 
   const socialLinks = [
-    { name: "GitHub", icon: <Github className="h-5 w-5" />, url: "#" },
-    { name: "LinkedIn", icon: <Linkedin className="h-5 w-5" />, url: "#" },
-    { name: "Twitter", icon: <Twitter className="h-5 w-5" />, url: "#" },
+    { name: "GitHub", icon: <Github className="h-5 w-5" />, url: "https://github.com/carson2222" },
+    {
+      name: "LinkedIn",
+      icon: <Linkedin className="h-5 w-5" />,
+      url: "https://www.linkedin.com/in/carson-ts-830479321/",
+    },
+    { name: "Twitter", icon: <Twitter className="h-5 w-5" />, url: "https://x.com/carson3068" },
     { name: "Email", icon: <Mail className="h-5 w-5" />, url: "mailto:example@example.com" },
   ];
 
