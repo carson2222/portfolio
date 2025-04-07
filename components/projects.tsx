@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github, X, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Markdown from "react-markdown";
 
 type Project = {
   id: number;
@@ -28,8 +29,11 @@ const projects: Project[] = [
     id: 1,
     title: "E-Commerce Platform",
     description: "A modern e-commerce platform with cart functionality and payment integration.",
-    longDescription:
-      "A comprehensive e-commerce solution built with Next.js and Tailwind CSS. This platform features a responsive design, dynamic product listings, shopping cart functionality, secure checkout with Stripe integration, and a dashboard for inventory management. The application uses server-side rendering for improved SEO and performance.",
+    longDescription: `# Welcome to my blog
+
+This is my first post using MDX in Next.js!
+
+Here's some **bold** text and _italic_ text.`,
     image: "/placeholder.svg?height=600&width=800",
     tags: ["Next.js", "Tailwind CSS", "Stripe", "Prisma"],
     features: [
@@ -228,7 +232,9 @@ export default function Projects() {
               </div>
 
               <div className="mt-6">
-                <p className="text-foreground mb-6">{selectedProject.longDescription}</p>
+                <p className="text-foreground mb-6 prose lg:prose-xl">
+                  <Markdown>{selectedProject.longDescription}</Markdown>
+                </p>
 
                 <div className="mb-6">
                   <h4 className="text-lg font-semibold mb-3">Key Features</h4>
