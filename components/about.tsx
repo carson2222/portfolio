@@ -2,127 +2,76 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { BicepsFlexed, Dot } from "lucide-react";
+import { useTheme } from "next-themes";
 
-type StrengthsItem = {
-  title: string;
-  description: string;
-};
-
-const strengths: StrengthsItem[] = [
-  {
-    title: "Self-Taught Developer",
-    description: "Constantly expanding my skills through courses, projects, and hands-on experimentation.",
-  },
-  {
-    title: "Problem-Solving Mindset",
-    description: "I enjoy breaking down complex challenges into logical, manageable steps.",
-  },
-  {
-    title: "Adaptability",
-    description: "Quick to embrace new technologies and frameworks as needed.",
-  },
-  {
-    title: "Collaborative Spirit",
-    description: "Comfortable working in teams, sharing ideas, and giving/receiving feedback.",
-  },
-  {
-    title: "Persistence",
-    description: "Compile errors > bedtime. I’ll obsess until it’s fixed.",
-  },
-  {
-    title: "Proactive Attitude",
-    description: "Always looking for ways to optimize processes or learn something new.",
-  },
-];
+const aboutMe = `Technology has been my passion since childhood—I&apos;ve practically lived and breathed it
+                      24/7. From an early age, I was fascinated by IT and programming, but it wasn&apos;t until
+                      high school that I fully immersed myself in this field. What started as a pursuit of good
+                      grades quickly turned into something much bigger: a genuine drive to learn and create.
+                      <br />
+                      <br />
+                      My journey began with JavaScript, a language that remains my strongest ally. Over time, I
+                      explored its entire ecosystem, constantly expanding my knowledge by experimenting with new
+                      technologies and dedicating every free moment to personal projects.
+                      <br />
+                      <br />
+                      At around 16, I discovered the world of Web3. While my age made it difficult to land a
+                      traditional job, I turned to freelancing—a decision that sharpened both my technical skills
+                      and my ability to collaborate with clients.
+                      <br />
+                      <br />
+                      Now, as I look ahead to 2025, my goals are clear: excel in my final exams, secure a place in
+                      the IT program at the Silesian University of Technology in Gliwice, and find an ambitious
+                      role as a Junior Fullstack Developer—one that challenges me to grow and contribute
+                      meaningfully to innovative projects.`;
 
 export default function About() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   return (
-    <section id="about" className="py-20 px-4 md:px-8 lg:px-16">
-      <div className="max-w-6xl mx-auto">
+    <section id="about" className="relative min-h-screen py-20 px-4 md:px-8 lg:px-16 overflow-hidden">
+      {/* Background effects similar to Hero section */}
+      <div className="absolute inset-0 -z-10">
+        <div
+          className={`absolute inset-0 ${
+            isDark
+              ? "bg-gradient-to-br from-black via-slate-900 to-slate-800"
+              : "bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200"
+          }`}
+        />
+
+        {/* Animated grid */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
+        </div>
+
+        {/* Glowing orbs */}
+        <div className="absolute top-1/3 left-1/4 w-60 h-60 bg-primary/20 rounded-full filter blur-[80px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-primary/20 rounded-full filter blur-[100px] animate-pulse delay-700" />
+      </div>
+
+      <div className="max-w-7xl mx-auto">
+        {/* About Me Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="text-center"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">Code, Coffee & Constant Learning</p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/70 to-primary">
+            About Me
+          </h2>
+          <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+            <CardContent className="pt-6">
+              <div
+                className="max-w-3xl mx-auto text-muted-foreground leading-relaxed text-lg"
+                dangerouslySetInnerHTML={{ __html: aboutMe }}
+              />
+            </CardContent>
+          </Card>
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
-              <CardContent className="pt-6">
-                <h3 className="text-2xl font-semibold mb-4">My Journey</h3>
-                <p className="text-muted-foreground mb-4">
-                  Technology has been my passion since childhood—I've practically lived and breathed it 24/7. From
-                  an early age, I was fascinated by IT and programming, but it wasn't until high school that I
-                  fully immersed myself in this field. What started as a pursuit of good grades quickly turned into
-                  something much bigger: a genuine drive to learn and create.
-                </p>
-                <p className="text-muted-foreground mb-4">
-                  My journey began with JavaScript, a language that remains my strongest ally. Over time, I
-                  explored its entire ecosystem, constantly expanding my knowledge by experimenting with new
-                  technologies and dedicating every free moment to personal projects.
-                </p>
-                <p className="text-muted-foreground mb-4">
-                  At around 16, I discovered the world of Web3. While my age made it difficult to land a
-                  traditional job, I turned to freelancing—a decision that sharpened both my technical skills and
-                  my ability to collaborate with clients.
-                </p>
-
-                <p className="text-muted-foreground">
-                  Now, as I look ahead to 2025, my goals are clear: excel in my final exams, secure a place in the
-                  IT program at the Silesian University of Technology in Gliwice, and find an ambitious role as a
-                  Junior Fullstack Developer—one that challenges me to grow and contribute meaningfully to
-                  innovative projects.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-full">
-              <CardContent className="pt-6">
-                <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-                  My Strengths <BicepsFlexed className="text-primary" />
-                </h3>
-                <div className="space-y-6">
-                  {strengths.map((item, index) => (
-                    <div key={index} className="group">
-                      <div className="flex items-start gap-4">
-                        <div className="relative mt-1">
-                          <div className="absolute inset-0 bg-primary/10 rounded-full translate-x-0 translate-y-0 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform" />
-                          <Dot size={28} className="relative text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="text-lg font-medium text-foreground">{item.title}</h4>
-                          <p className="text-muted-foreground mt-2 leading-relaxed">{item.description}</p>
-                        </div>
-                      </div>
-                      {index < strengths.length - 1 && (
-                        <Separator className="my-4 bg-border/30 group-hover:bg-primary/30 transition-colors" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
       </div>
     </section>
   );

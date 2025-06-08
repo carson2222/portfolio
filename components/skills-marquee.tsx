@@ -42,6 +42,8 @@ const skills: Skill[] = [
   { name: "WebSockets", src: "/marquee/websocket.png" },
   { name: "Docker", src: "/marquee/docker.png" },
   { name: "RestAPI", src: "/marquee/restapi.png" },
+  { name: "Ethers.js", src: "/marquee/ethersjs.png" },
+  { name: "EVM", src: "/marquee/evm.png" },
 ];
 
 export default function SkillsMarquee() {
@@ -89,7 +91,7 @@ export default function SkillsMarquee() {
                       alt={skill.name}
                       width={40}
                       height={40}
-                      className="max-w-10 max-h-10 w-auto h-auto"
+                      className="max-w-10 max-h-10 w-auto h-auto drop-shadow-md filter brightness-110"
                     />
                   </div>
                   <span className="text-xl font-semibold w-max-[40px] h-auto">{skill.name}</span>
@@ -116,7 +118,7 @@ export default function SkillsMarquee() {
                       alt={skill.name}
                       width={40}
                       height={40}
-                      className="max-w-10 max-h-10 w-auto h-auto"
+                      className="max-w-10 max-h-10 w-auto h-auto drop-shadow-md filter brightness-110"
                     />
                   </div>{" "}
                   <span className="text-xl font-semibold">{skill.name}</span>

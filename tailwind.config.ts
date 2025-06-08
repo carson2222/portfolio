@@ -1,8 +1,9 @@
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
+import animate from "tailwindcss-animate";
 
 const config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -69,10 +70,19 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        gradient: {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%",
+          },
+          "50%": {
+            backgroundPosition: "100% 50%",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        gradient: "gradient 3s ease infinite",
       },
       typography: () => ({
         DEFAULT: {
@@ -98,7 +108,7 @@ const config = {
       }),
     },
   },
-  plugins: [require("tailwindcss-animate"), typography],
+  plugins: [animate, typography],
 } satisfies Config;
 
 export default config;

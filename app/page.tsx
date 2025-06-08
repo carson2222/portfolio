@@ -5,6 +5,8 @@ import Contact from "@/components/contact";
 import CustomCursor from "@/components/custom-cursor";
 import { ModeToggle } from "@/components/mode-toggle";
 import SkillsMarquee from "@/components/skills-marquee";
+import Strengths from "@/components/strengths";
+import WorkHistory from "@/components/work-history";
 
 export default function Home() {
   return (
@@ -15,6 +17,8 @@ export default function Home() {
       </div>
       <Hero />
       <About />
+      <Strengths />
+      <WorkHistory />
       <SkillsMarquee />
       <Projects />
       <Contact />

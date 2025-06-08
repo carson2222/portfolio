@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Github, Linkedin, Twitter, Mail, Send } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 export default function Contact() {
   const [formState, setFormState] = useState({
@@ -20,6 +21,8 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState({
@@ -73,7 +76,27 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-20 px-4 md:px-8 lg:px-16 bg-muted/30">
+    <section id="contact" className="py-20 px-4 md:px-8 lg:px-16 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 -z-10">
+        <div
+          className={`absolute inset-0 ${
+            isDark
+              ? "bg-gradient-to-br from-black via-slate-900 to-slate-800"
+              : "bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200"
+          }`}
+        />
+
+        {/* Animated grid */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
+        </div>
+
+        {/* Glowing orbs */}
+        <div className="absolute top-1/3 left-1/4 w-60 h-60 bg-primary/20 rounded-full filter blur-[80px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-primary/20 rounded-full filter blur-[100px] animate-pulse delay-700" />
+      </div>
+
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

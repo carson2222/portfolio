@@ -9,6 +9,74 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
+// Update animations with spring return
+const animations = `
+  @keyframes rainbow-shift {
+    0% { --rainbow-angle: 0deg; }
+    100% { --rainbow-angle: 360deg; }
+  }
+
+  .animate-rainbow-shift {
+    animation: rainbow-shift 2.5s linear infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-1px) translateX(0.5px); }
+    100% { transform: translateY(0) translateX(0); }
+  }
+
+  @keyframes attention-wiggle {
+    0% { transform: perspective(1000px) rotateY(0deg) scale(1); }
+    25% { transform: perspective(1000px) rotateY(5deg) scale(1.02); }
+    50% { transform: perspective(1000px) rotateY(0deg) scale(1); }
+    75% { transform: perspective(1000px) rotateY(-5deg) scale(1.02); }
+    100% { transform: perspective(1000px) rotateY(0deg) scale(1); }
+  }
+
+  @keyframes return-spring {
+    0% { transform: perspective(1000px) rotateX(var(--from-x)) rotateY(var(--from-y)); }
+    25% { transform: perspective(1000px) rotateX(calc(var(--from-x) * 0.2)) rotateY(calc(var(--from-y) * -0.1)); }
+    50% { transform: perspective(1000px) rotateX(calc(var(--from-x) * -0.1)) rotateY(calc(var(--from-y) * 0.05)); }
+    75% { transform: perspective(1000px) rotateX(calc(var(--from-x) * 0.05)) rotateY(calc(var(--from-y) * -0.02)); }
+    100% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); }
+  }
+
+  .return-animation {
+    animation: return-spring 0.5s ease-out forwards;
+  }
+
+  .glitter-container {
+    pointer-events: none;
+    mix-blend-mode: color-dodge;
+    background: 
+      radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 50px 160px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 160px 120px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .attention-animation {
+    animation: attention-wiggle 3s ease-in-out infinite;
+  }
+`;
+
+// Add the animation styles to the document
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.textContent = animations;
+  document.head.appendChild(style);
+}
+
 export default function Hero() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -17,7 +85,14 @@ export default function Hero() {
   const [rotateY, setRotateY] = useState(0);
   const [tiltMagnitude, setTiltMagnitude] = useState(0);
   const [tiltAngle, setTiltAngle] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [glitterParticles, setGlitterParticles] = useState<
+    Array<{ x: number; y: number; delay: number; size: number }>
+  >([]);
+  const [isReturning, setIsReturning] = useState(false);
+  const lastRotation = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -44,7 +119,23 @@ export default function Hero() {
     setTiltAngle(angle);
   }, [rotateX, rotateY]);
 
+  // Generate glitter particles
+  useEffect(() => {
+    const particles = Array.from({ length: 50 }, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 2,
+      size: Math.random() * 2 + 1,
+    }));
+    setGlitterParticles(particles);
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsReturning(false);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+
     if (!cardRef.current || isMobile) return;
 
     const card = cardRef.current;
@@ -56,30 +147,65 @@ export default function Hero() {
     const mouseXRelative = ((e.clientX - centerX) / (rect.width / 2)) * 100;
     const mouseYRelative = ((e.clientY - centerY) / (rect.height / 2)) * 100;
 
+    // Update mouse position for shine effect
+    setMousePosition({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
+
+    const newRotateX = -1 * (mouseYRelative * 0.1);
+    const newRotateY = mouseXRelative * 0.1;
+
+    // Store the last rotation values
+    lastRotation.current = { x: newRotateX, y: newRotateY };
+
     // Set rotation (limited to +/- 10 degrees)
-    setRotateX(-1 * (mouseYRelative * 0.1));
-    setRotateY(mouseXRelative * 0.1);
+    setRotateX(newRotateX);
+    setRotateY(newRotateY);
   };
 
   const handleMouseLeave = () => {
-    // Reset to neutral position
-    setRotateX(0);
-    setRotateY(0);
+    if (cardRef.current) {
+      // Set CSS variables for the spring animation
+      cardRef.current.style.setProperty("--from-x", `${lastRotation.current.x}deg`);
+      cardRef.current.style.setProperty("--from-y", `${lastRotation.current.y}deg`);
+      setIsReturning(true);
+    }
+
+    // Reset positions after animation
+    setTimeout(() => {
+      setRotateX(0);
+      setRotateY(0);
+      setMousePosition({ x: 0.5, y: 0.5 });
+      setIsReturning(false);
+    }, 500); // Match this with animation duration
   };
 
   // Get holographic color based on tilt angle (continuous color wheel)
   const getHolographicGradient = () => {
-    // Convert angle to hue (0-360)
     const hue = tiltAngle;
+    const saturation = 100;
+    const lightness = 60 + tiltMagnitude * 20;
 
-    // Create two colors with the same hue but different lightness for the gradient
-    const color1 = `hsl(${hue}, 100%, 70%)`;
-    const color2 = `hsl(${hue}, 100%, 50%)`;
+    const color1 = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    const color2 = `hsl(${(hue + 30) % 360}, ${saturation}%, ${lightness - 10}%)`;
+    const color3 = `hsl(${(hue + 60) % 360}, ${saturation}%, ${lightness}%)`;
 
-    // Determine gradient direction based on angle
-    const gradientAngle = (tiltAngle + 90) % 360; // Perpendicular to tilt
+    const gradientAngle = (tiltAngle + 90) % 360;
 
-    return `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`;
+    return `linear-gradient(${gradientAngle}deg, ${color1}, ${color2}, ${color3})`;
+  };
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const targetId = e.currentTarget.getAttribute("href")?.slice(1);
+    const targetElement = document.getElementById(targetId || "");
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   return (
@@ -110,7 +236,7 @@ export default function Hero() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
             <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent animate-gradient bg-[length:400%_400%] bg-gradient-to-r from-primary via-primary/70 to-primary"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -130,7 +256,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <Link href="#projects">
+              <Link href="#projects" onClick={handleSmoothScroll}>
                 <Button
                   size="lg"
                   className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -150,86 +276,197 @@ export default function Hero() {
           >
             <div
               ref={cardRef}
-              className="relative w-[280px] h-[400px] md:w-[350px] md:h-[500px] rounded-2xl overflow-hidden transition-transform duration-200 ease-out transform-style-3d"
+              className={`relative w-[280px] h-[400px] md:w-[350px] md:h-[500px] rounded-2xl overflow-hidden transform-style-3d
+                ${!hasInteracted ? "attention-animation" : ""}
+                ${isReturning ? "return-animation" : "transition-transform duration-200 ease-out"}
+              `}
               style={{
-                transform: isMobile
+                transform: isReturning
+                  ? undefined
+                  : isMobile
                   ? "perspective(1000px) rotateY(10deg)"
                   : `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-                transition: "transform 0.1s ease-out",
               }}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={() => setHasInteracted(true)}
             >
               {/* Card border */}
               <div className="absolute inset-0 rounded-2xl border-4 border-white/30 z-20 pointer-events-none"></div>
 
               {/* Base image */}
               <div className="absolute inset-0 z-10">
-                <Image src="/whale.png" alt="Developer Portrait" fill className="object-cover" priority />
+                <Image src="/card.png" alt="Developer Portrait" fill className="object-cover" priority />
               </div>
+
+              {/* Fine grain texture */}
+              <div
+                className="absolute inset-0 z-15 pointer-events-none"
+                style={{
+                  opacity: 0.3,
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                  mixBlendMode: "overlay",
+                }}
+              ></div>
+
+              {/* Dynamic glitter particles */}
+              <div className="absolute inset-0 z-20 overflow-hidden">
+                {glitterParticles.map((particle, index) => (
+                  <div
+                    key={index}
+                    className="absolute w-[2px] h-[2px] rounded-full bg-white"
+                    style={{
+                      left: `${particle.x}%`,
+                      top: `${particle.y}%`,
+                      opacity: 0,
+                      transform: "scale(0)",
+                      animation: `sparkle ${1 + particle.delay}s ease-in-out infinite`,
+                      animationDelay: `${particle.delay}s`,
+                      width: `${particle.size}px`,
+                      height: `${particle.size}px`,
+                      boxShadow: "0 0 2px #fff",
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Static glitter pattern */}
+              <div
+                className="absolute inset-0 z-20 glitter-container"
+                style={{
+                  opacity: 0.5 * tiltMagnitude,
+                  transform: `rotate(${tiltAngle * 0.2}deg)`,
+                }}
+              ></div>
+
+              {/* Holographic scanline texture */}
+              <div
+                className="absolute inset-0 z-15 pointer-events-none"
+                style={{
+                  opacity: 0.4 * tiltMagnitude,
+                  backgroundImage: `repeating-linear-gradient(
+                    ${90 + tiltAngle * 0.5}deg,
+                    transparent,
+                    rgba(255,255,255,0.1) 1px,
+                    rgba(255,255,255,0.2) 2px,
+                    rgba(255,255,255,0.1) 3px,
+                    transparent 4px
+                  )`,
+                  backgroundSize: "8px 8px",
+                  mixBlendMode: "color-dodge",
+                  transition: "opacity 0.2s ease-out",
+                }}
+              ></div>
+
+              {/* Holographic texture pattern from image */}
+              <div
+                className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
+                style={{
+                  opacity: 0.7 * tiltMagnitude,
+                  transform: `rotate(${tiltAngle * 0.5}deg) scale(${1 + tiltMagnitude * 0.1})`,
+                  backgroundImage: `url('/holo-texture.png')`,
+                  backgroundSize: "200% 200%",
+                  backgroundPosition: `${mousePosition.x * 100}% ${mousePosition.y * 100}%`,
+                  transition: "transform 0.2s ease-out, background-position 0.2s ease-out",
+                }}
+              ></div>
+
+              {/* Animated rainbow reflection */}
+              <div
+                className="absolute inset-0 z-20 pointer-events-none animate-rainbow-shift mix-blend-soft-light"
+                style={{
+                  opacity: 0.4 * tiltMagnitude,
+                  backgroundImage: `url('/holo-texture.png')`,
+                  backgroundSize: "200% 200%",
+                  backgroundPosition: `${100 - mousePosition.x * 100}% ${100 - mousePosition.y * 100}%`,
+                  filter: "hue-rotate(calc(var(--rainbow-angle, 0deg)))",
+                  transition: "background-position 0.2s ease-out",
+                }}
+              ></div>
+
+              {/* Holographic texture pattern */}
+              <div
+                className="absolute inset-0 z-10 pointer-events-none mix-blend-overlay opacity-30"
+                style={{
+                  backgroundImage: `
+                    repeating-linear-gradient(
+                      ${tiltAngle + 45}deg,
+                      transparent,
+                      rgba(255,255,255,0.1) 1px,
+                      transparent 2px
+                    ),
+                    repeating-linear-gradient(
+                      ${tiltAngle - 45}deg,
+                      transparent,
+                      rgba(255,255,255,0.1) 1px,
+                      transparent 2px
+                    )
+                  `,
+                  backgroundSize: "8px 8px",
+                  transition: "background-image 0.3s ease-out",
+                }}
+              ></div>
 
               {/* Smooth holographic color effect */}
               <div
                 className="absolute inset-0 z-10 pointer-events-none transition-all duration-300"
                 style={{
-                  opacity: tiltMagnitude * 0.5,
+                  opacity: tiltMagnitude * 0.2,
                   background: getHolographicGradient(),
                   mixBlendMode: "color-dodge",
                 }}
               ></div>
 
-              {/* Light reflection effect */}
+              {/* Enhanced light reflection effect */}
+              <div
+                className="absolute inset-0 z-10 pointer-events-none transition-all duration-300"
+                style={{
+                  opacity: tiltMagnitude * 0.15,
+                  background: `
+                    radial-gradient(
+                      circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+                      rgba(255,255,255,0.8) 0%, 
+                      rgba(255,255,255,0.3) 20%,
+                      rgba(255,255,255,0.1) 40%,
+                      transparent 60%
+                    ),
+                    linear-gradient(
+                      ${tiltAngle}deg,
+                      rgba(255,255,255,0.5) 0%,
+                      transparent 80%
+                    )
+                  `,
+                  transition: "background 0.2s ease-out",
+                }}
+              ></div>
+
+              {/* Rainbow edge effect */}
               <div
                 className="absolute inset-0 z-10 pointer-events-none transition-all duration-300"
                 style={{
                   opacity: tiltMagnitude * 0.3,
-                  background: `radial-gradient(
-                    circle at ${50 + rotateY * 5}% ${50 - rotateX * 5}%, 
-                    rgba(255,255,255,0.8) 0%, 
-                    rgba(255,255,255,0) 50%
-                  )`,
+                  background: `
+                    linear-gradient(
+                      ${tiltAngle + 90}deg,
+                      rgba(255,0,0,0.2),
+                      rgba(255,165,0,0.2),
+                      rgba(255,255,0,0.2),
+                      rgba(0,255,0,0.2),
+                      rgba(0,0,255,0.2),
+                      rgba(238,130,238,0.2)
+                    )
+                  `,
+                  mixBlendMode: "color-dodge",
                 }}
               ></div>
 
-              {/* Glitter effect - only visible when tilted */}
-              <div
-                className="absolute inset-0 z-10 mix-blend-overlay pointer-events-none transition-opacity duration-300"
-                style={{ opacity: tiltMagnitude * 0.8 }}
-              >
-                {Array.from({ length: 30 }).map((_, i) => {
-                  // Assign fixed positions to each glitter particle
-                  const left = (i % 5) * 20 + Math.random() * 10;
-                  const top = Math.floor(i / 5) * 20 + Math.random() * 10;
-
-                  return (
-                    <div
-                      key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full"
-                      style={{
-                        left: `${left}%`,
-                        top: `${top}%`,
-                        opacity: Math.random() * 0.7 + 0.3,
-                        transform: `scale(${1 + tiltMagnitude})`,
-                        transition: "transform 0.3s ease-out, opacity 0.3s ease-out",
-                      }}
-                    ></div>
-                  );
-                })}
-              </div>
-
               {/* Card shadow */}
               <div
-                className="absolute -bottom-10 -left-10 -right-10 h-20 bg-black/30 blur-xl z-0 transform-style-3d transition-transform duration-300"
+                className="absolute -bottom-12 -left-12 -right-12 h-24 bg-black/40 blur-2xl z-0 transform-style-3d transition-transform duration-300"
                 style={{
                   transform: `translateX(${rotateY * 2}px) translateY(${10 + rotateX}px)`,
                 }}
               ></div>
-
-              {/* Card content overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20">
-                <h3 className="text-white text-xl font-bold">Your Name</h3>
-                <p className="text-white/80 text-sm">Full Stack Developer</p>
-              </div>
             </div>
           </motion.div>
         </div>
