@@ -107,7 +107,7 @@ export default function Contact() {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem, laudantium?
+          Ready to collaborate on your next project? Whether you have a specific idea in mind or just want to discuss possibilities, I&apos;d love to hear from you. Let&apos;s create something amazing together!
           </p>
         </motion.div>
 
@@ -216,10 +216,7 @@ export default function Contact() {
                   className="absolute md:-top-18 md:-right-12 md:rotate-12 rotate-[170deg] -bottom-20 -right-2 md:scale-100 scale-[90%]"
                 />
                 <h3 className="text-2xl font-semibold mb-6">Connect With Me</h3>
-                <p className="text-muted-foreground mb-8">
-                  Feel free to connect with me on social media or send me an email. I&apos;m always open to
-                  discussing new projects, creative ideas, or opportunities to be part of your vision.
-                </p>
+           
                 <div className="space-y-4">
                   {socialLinks.map((link, index) => (
                     <motion.a

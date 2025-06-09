@@ -254,7 +254,7 @@ export default function Hero() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
             <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent animate-gradient bg-[length:400%_400%] bg-gradient-to-r from-primary via-primary/70 to-primary"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent animate-gradient bg-[length:400%_400%] bg-gradient-to-r from-primary via-primary/70 to-primary py-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
