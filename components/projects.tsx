@@ -224,69 +224,71 @@ export default function Projects() {
   const regularProjects = useMemo(() => projects.filter((p) => !p.featured), []);
 
   return (
-    <section id="projects" className="container space-y-8 py-24">
-      <div className="flex flex-col items-start gap-4">
-        <h2 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl">Featured Projects</h2>
-        <p className="text-muted-foreground">
-          Here are some of my recent projects that showcase my skills and experience.
-        </p>
-      </div>
+    <section id="projects" className="relative min-h-screen py-20 px-4 md:px-8 lg:px-16 overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col items-center text-center gap-4 mb-8">
+          <h2 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl">Featured Projects</h2>
+          <p className="text-muted-foreground max-w-2xl">
+            Here are some of my recent projects that showcase my skills and experience.
+          </p>
+        </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {[...featuredProjects, ...regularProjects].map((project) => (
-          <motion.div
-            key={project.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: ANIMATION_DURATION }}
-          >
-            <Card
-              className={`group relative cursor-pointer overflow-hidden transition-all hover:shadow-lg ${
-                project.featured ? "md:col-span-2 lg:col-span-1" : ""
-              }`}
-              onClick={() => openProjectDetails(project)}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {[...featuredProjects, ...regularProjects].map((project) => (
+            <motion.div
+              key={project.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: ANIMATION_DURATION }}
             >
-              <CardContent className="p-0">
-                <div className="relative aspect-video overflow-hidden">
-                  {project.thumbnail ? (
-                    <div className="absolute inset-0 overflow-hidden">
-                      <Image
-                        src={project.thumbnail}
-                        alt={project.title}
-                        fill
-                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                  ) : (
-                    <div className="absolute inset-0 bg-zinc-900" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/0 p-6 transition-opacity duration-300 group-hover:opacity-90">
-                    <div className="flex h-full flex-col justify-end gap-4">
-                      <h3 className="font-bold text-lg text-white drop-shadow-md">{project.title}</h3>
-                      <p className="text-sm text-gray-200 drop-shadow-md line-clamp-2">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.technologies.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
-                            +{project.technologies.length - 3}
-                          </Badge>
-                        )}
+              <Card
+                className={`group relative cursor-pointer overflow-hidden transition-all hover:shadow-lg ${
+                  project.featured ? "md:col-span-2 lg:col-span-1" : ""
+                }`}
+                onClick={() => openProjectDetails(project)}
+              >
+                <CardContent className="p-0">
+                  <div className="relative aspect-video overflow-hidden">
+                    {project.thumbnail ? (
+                      <div className="absolute inset-0 overflow-hidden">
+                        <Image
+                          src={project.thumbnail}
+                          alt={project.title}
+                          fill
+                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 bg-zinc-900" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/0 p-6 transition-opacity duration-300 group-hover:opacity-90">
+                      <div className="flex h-full flex-col justify-end gap-4">
+                        <h3 className="font-bold text-lg text-white drop-shadow-md">{project.title}</h3>
+                        <p className="text-sm text-gray-200 drop-shadow-md line-clamp-2">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.technologies.slice(0, 3).map((tech) => (
+                            <Badge key={tech} variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
+                              {tech}
+                            </Badge>
+                          ))}
+                          {project.technologies.length > 3 && (
+                            <Badge variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
+                              +{project.technologies.length - 3}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       <Dialog open={!!selectedProject} onOpenChange={() => closeProjectDetails()}>
