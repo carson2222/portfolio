@@ -220,7 +220,7 @@ export default function Hero() {
     {
       name: "LinkedIn",
       icon: <Linkedin className="h-5 w-5" />,
-      url: "https://www.linkedin.com/in/carson-ts-830479321/",
+      url: "https://www.linkedin.com/in/olaf-kraso%C5%84-830479321/",
     },
     { name: "Twitter", icon: <Twitter className="h-5 w-5" />, url: "https://x.com/carson3068" },
     { name: "Email", icon: <Mail className="h-5 w-5" />, url: "mailto:olaf3068@gmail.com" },
