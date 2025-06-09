@@ -1,7 +1,8 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@plugin "@tailwindcss/typography";
-@config "../tailwind.config.ts";
+/* @import "tw-animate-css"; */
+/* @plugin "@tailwindcss/typography"; */
+/* @config "../tailwind.config.ts"; */
+
 
 @layer utilities {
   .text-balance {
