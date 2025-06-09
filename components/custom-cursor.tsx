@@ -7,6 +7,7 @@ import { useMobile } from "@/hooks/use-mobile";
 export default function CustomCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isPointer, setIsPointer] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
   const isMobile = useMobile();
 
   useEffect(() => {
@@ -26,12 +27,19 @@ export default function CustomCursor() {
       setIsPointer(!!isPointerElement);
     };
 
+    const handleMouseDown = () => setIsClicking(true);
+    const handleMouseUp = () => setIsClicking(false);
+
     window.addEventListener("mousemove", updatePosition);
     window.addEventListener("mousemove", updateCursorType);
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       window.removeEventListener("mousemove", updatePosition);
       window.removeEventListener("mousemove", updateCursorType);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [position.x, position.y, isMobile]);
 
@@ -50,29 +58,30 @@ export default function CustomCursor() {
         }
       `}</style>
       <motion.div
-        className="fixed top-0 left-0 w-6 h-6 rounded-full bg-primary/30 mix-blend-difference pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full bg-primary/20 mix-blend-difference pointer-events-none z-[9999]"
         animate={{
-          x: position.x - 12,
-          y: position.y - 12,
-          scale: isPointer ? 1.5 : 1,
+          x: position.x - 16,
+          y: position.y - 16,
+          scale: isPointer ? 1.5 : isClicking ? 0.8 : 1,
         }}
         transition={{
           type: "spring",
-          stiffness: 500,
-          damping: 28,
-          mass: 0.5,
+          stiffness: 400,
+          damping: 25,
+          mass: 0.2,
         }}
       />
       <motion.div
-        className="fixed top-0 left-0 w-2 h-2 rounded-full bg-primary pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 w-3 h-3 rounded-full bg-primary pointer-events-none z-[9999]"
         animate={{
-          x: position.x - 4,
-          y: position.y - 4,
+          x: position.x - 6,
+          y: position.y - 6,
+          scale: isClicking ? 0.5 : 1,
         }}
         transition={{
           type: "spring",
-          stiffness: 1000,
-          damping: 28,
+          stiffness: 800,
+          damping: 20,
           mass: 0.1,
         }}
       />

@@ -35,7 +35,7 @@ const skills: Skill[] = [
   { name: "Metaplex", src: "/marquee/metaplex.png" },
   { name: "Telegram", src: "/marquee/telegram.png" },
   { name: "Discord", src: "/marquee/discord.png" },
-  { name: "OpenAI", src: "/marquee/OpenAI.png" },
+  { name: "OpenAI", src: "/marquee/openai.png" },
   { name: "ai16z", src: "/marquee/ai16z.png" },
   { name: "Shadcn", src: "/marquee/shadcn.png" },
   { name: "Redux", src: "/marquee/redux.png" },
