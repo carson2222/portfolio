@@ -4,26 +4,17 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from "next-themes";
 
-const aboutMe = `Technology has been my passion since childhood—I&apos;ve practically lived and breathed it
-                      24/7. From an early age, I was fascinated by IT and programming, but it wasn&apos;t until
-                      high school that I fully immersed myself in this field. What started as a pursuit of good
-                      grades quickly turned into something much bigger: a genuine drive to learn and create.
-                      <br />
-                      <br />
-                      My journey began with JavaScript, a language that remains my strongest ally. Over time, I
-                      explored its entire ecosystem, constantly expanding my knowledge by experimenting with new
-                      technologies and dedicating every free moment to personal projects.
-                      <br />
-                      <br />
-                      At around 16, I discovered the world of Web3. While my age made it difficult to land a
-                      traditional job, I turned to freelancing—a decision that sharpened both my technical skills
-                      and my ability to collaborate with clients.
-                      <br />
-                      <br />
-                      Now, as I look ahead to 2025, my goals are clear: excel in my final exams, secure a place in
-                      the IT program at the Silesian University of Technology in Gliwice, and find an ambitious
-                      role as a Junior Fullstack Developer—one that challenges me to grow and contribute
-                      meaningfully to innovative projects.`;
+const aboutMe = `I've been into technology for as long as I can remember. It&apos;s always been more than just a hobby, it's something I live and breathe. I got into IT and programming pretty early, but it wasn&apos;t until high school that things really clicked for me. What started out as a way to get good grades turned into a genuine passion for learning and building things.
+<br />
+<br />
+I started with JavaScript, and it&apos;s still my go-to language. Over time, I&apos;ve explored its entire ecosystem, always trying out new tools and frameworks, and spending most of my free time working on personal projects just for the fun of it.
+<br />
+<br />
+When I was about 16, I got into Web3. Since I was too young for a regular job, I dove into freelancing instead. It turned out to be the best decision—I not only improved my technical skills but also learned how to work with clients and manage real-world projects.
+<br />
+<br />
+Looking ahead to 2025, I&apos;ve set my sights on a few big goals: ace my final exams, get into the IT program at the Silesian University of Technology in Gliwice, and land a Junior Fullstack Developer role where I can keep learning, push my limits, and contribute to something meaningful.`;
+
 
 export default function About() {
   const { theme } = useTheme();
