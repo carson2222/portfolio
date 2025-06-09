@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 @plugin "@tailwindcss/typography";
 @config "../tailwind.config.ts";
 
@@ -143,6 +143,4 @@
   }
 }
 
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
