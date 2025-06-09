@@ -1,13 +1,36 @@
 "use client";
 
-import type React from "react";
-
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import { Github, Linkedin, Twitter, Mail, ChevronRight } from "lucide-react";
+
+// Types
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
+interface GlitterParticle {
+  x: number;
+  y: number;
+  delay: number;
+  size: number;
+}
+
+interface LastRotation {
+  x: number;
+  y: number;
+}
+
+// Constants
+const ROTATION_FACTOR = 0.1;
+const MAX_PARTICLES = 50;
+const RETURN_ANIMATION_DURATION = 500;
+const MOBILE_BREAKPOINT = 768;
 
 // Update animations with spring return
 const animations = `
@@ -32,11 +55,9 @@ const animations = `
   }
 
   @keyframes attention-wiggle {
-    0% { transform: perspective(1000px) rotateY(0deg) scale(1); }
+    0%, 100% { transform: perspective(1000px) rotateY(0deg) scale(1); }
     25% { transform: perspective(1000px) rotateY(5deg) scale(1.02); }
-    50% { transform: perspective(1000px) rotateY(0deg) scale(1); }
     75% { transform: perspective(1000px) rotateY(-5deg) scale(1.02); }
-    100% { transform: perspective(1000px) rotateY(0deg) scale(1); }
   }
 
   @keyframes return-spring {
@@ -85,43 +106,16 @@ export default function Hero() {
   const [rotateY, setRotateY] = useState(0);
   const [tiltMagnitude, setTiltMagnitude] = useState(0);
   const [tiltAngle, setTiltAngle] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [glitterParticles, setGlitterParticles] = useState<
-    Array<{ x: number; y: number; delay: number; size: number }>
-  >([]);
+  const [glitterParticles, setGlitterParticles] = useState<GlitterParticle[]>([]);
   const [isReturning, setIsReturning] = useState(false);
-  const lastRotation = useRef({ x: 0, y: 0 });
+  const lastRotation = useRef<LastRotation>({ x: 0, y: 0 });
 
+  // Initialize glitter particles
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, []);
-
-  // Calculate tilt magnitude and angle whenever rotation changes
-  useEffect(() => {
-    // Calculate overall tilt magnitude (0-1 scale)
-    const magnitude = Math.sqrt(rotateX * rotateX + rotateY * rotateY) / 14;
-    setTiltMagnitude(Math.min(magnitude, 1));
-
-    // Calculate tilt angle in degrees (0-360)
-    let angle = Math.atan2(-rotateX, rotateY) * (180 / Math.PI);
-    if (angle < 0) angle += 360; // Convert to 0-360 range
-    setTiltAngle(angle);
-  }, [rotateX, rotateY]);
-
-  // Generate glitter particles
-  useEffect(() => {
-    const particles = Array.from({ length: 50 }, () => ({
+    const particles = Array.from({ length: MAX_PARTICLES }, () => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
       delay: Math.random() * 2,
@@ -130,59 +124,71 @@ export default function Hero() {
     setGlitterParticles(particles);
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsReturning(false);
-    if (!hasInteracted) {
-      setHasInteracted(true);
-    }
+  // Handle window resize
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
 
-    if (!cardRef.current || isMobile) return;
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
+  // Calculate tilt effects
+  useEffect(() => {
+    const magnitude = Math.sqrt(rotateX * rotateX + rotateY * rotateY) / 14;
+    setTiltMagnitude(Math.min(magnitude, 1));
 
-    // Calculate mouse position relative to card center (in percentage)
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const mouseXRelative = ((e.clientX - centerX) / (rect.width / 2)) * 100;
-    const mouseYRelative = ((e.clientY - centerY) / (rect.height / 2)) * 100;
+    let angle = Math.atan2(-rotateX, rotateY) * (180 / Math.PI);
+    if (angle < 0) angle += 360;
+    setTiltAngle(angle);
+  }, [rotateX, rotateY]);
 
-    // Update mouse position for shine effect
-    setMousePosition({
-      x: (e.clientX - rect.left) / rect.width,
-      y: (e.clientY - rect.top) / rect.height,
-    });
+  // Memoized handlers
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!cardRef.current || isMobile) return;
+      setIsReturning(false);
+      if (!hasInteracted) setHasInteracted(true);
 
-    const newRotateX = -1 * (mouseYRelative * 0.1);
-    const newRotateY = mouseXRelative * 0.1;
+      const card = cardRef.current;
+      const rect = card.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
 
-    // Store the last rotation values
-    lastRotation.current = { x: newRotateX, y: newRotateY };
+      const mouseXRelative = ((e.clientX - centerX) / (rect.width / 2)) * 100;
+      const mouseYRelative = ((e.clientY - centerY) / (rect.height / 2)) * 100;
 
-    // Set rotation (limited to +/- 10 degrees)
-    setRotateX(newRotateX);
-    setRotateY(newRotateY);
-  };
+      setMousePosition({
+        x: (e.clientX - rect.left) / rect.width,
+        y: (e.clientY - rect.top) / rect.height,
+      });
 
-  const handleMouseLeave = () => {
-    if (cardRef.current) {
-      // Set CSS variables for the spring animation
-      cardRef.current.style.setProperty("--from-x", `${lastRotation.current.x}deg`);
-      cardRef.current.style.setProperty("--from-y", `${lastRotation.current.y}deg`);
-      setIsReturning(true);
-    }
+      const newRotateX = -1 * (mouseYRelative * ROTATION_FACTOR);
+      const newRotateY = mouseXRelative * ROTATION_FACTOR;
 
-    // Reset positions after animation
+      lastRotation.current = { x: newRotateX, y: newRotateY };
+      setRotateX(newRotateX);
+      setRotateY(newRotateY);
+    },
+    [isMobile, hasInteracted]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    if (!cardRef.current) return;
+
+    cardRef.current.style.setProperty("--from-x", `${lastRotation.current.x}deg`);
+    cardRef.current.style.setProperty("--from-y", `${lastRotation.current.y}deg`);
+    setIsReturning(true);
+
     setTimeout(() => {
       setRotateX(0);
       setRotateY(0);
       setMousePosition({ x: 0.5, y: 0.5 });
       setIsReturning(false);
-    }, 500); // Match this with animation duration
-  };
+    }, RETURN_ANIMATION_DURATION);
+  }, []);
 
-  // Get holographic color based on tilt angle (continuous color wheel)
-  const getHolographicGradient = () => {
+  const getHolographicGradient = useCallback(() => {
     const hue = tiltAngle;
     const saturation = 100;
     const lightness = 60 + tiltMagnitude * 20;
@@ -191,22 +197,34 @@ export default function Hero() {
     const color2 = `hsl(${(hue + 30) % 360}, ${saturation}%, ${lightness - 10}%)`;
     const color3 = `hsl(${(hue + 60) % 360}, ${saturation}%, ${lightness}%)`;
 
-    const gradientAngle = (tiltAngle + 90) % 360;
+    return `linear-gradient(${(tiltAngle + 90) % 360}deg, ${color1}, ${color2}, ${color3})`;
+  }, [tiltAngle, tiltMagnitude]);
 
-    return `linear-gradient(${gradientAngle}deg, ${color1}, ${color2}, ${color3})`;
-  };
-
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSmoothScroll = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const targetId = e.currentTarget.getAttribute("href")?.slice(1);
-    const targetElement = document.getElementById(targetId || "");
-    if (targetElement) {
-      targetElement.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
+    const href = e.currentTarget.getAttribute("href");
+    if (!href) return;
+
+    const targetId = href.replace("#", "");
+    const element = document.getElementById(targetId);
+    if (!element) return;
+
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  const socialLinks = [
+    { name: "GitHub", icon: <Github className="h-5 w-5" />, url: "https://github.com/carson2222" },
+    {
+      name: "LinkedIn",
+      icon: <Linkedin className="h-5 w-5" />,
+      url: "https://www.linkedin.com/in/carson-ts-830479321/",
+    },
+    { name: "Twitter", icon: <Twitter className="h-5 w-5" />, url: "https://x.com/carson3068" },
+    { name: "Email", icon: <Mail className="h-5 w-5" />, url: "mailto:example@example.com" },
+  ];
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -244,7 +262,7 @@ export default function Hero() {
               Building Digital Experiences
             </motion.h1>
             <motion.p
-              className="text-lg mb-10 max-w-md mx-auto md:mx-0 text-muted-foreground"
+              className="text-lg mb-6 max-w-md mx-auto md:mx-0 text-muted-foreground"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -252,6 +270,7 @@ export default function Hero() {
               Crafting innovative web solutions with modern technologies and minimalist design principles.
             </motion.p>
             <motion.div
+              className="flex flex-col items-center md:items-start gap-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -259,11 +278,33 @@ export default function Hero() {
               <Link href="#projects" onClick={handleSmoothScroll}>
                 <Button
                   size="lg"
-                  className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-primary-foreground group"
                 >
                   Explore My Work
+                  <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
+              
+              <div className="flex items-center gap-4 mt-2">
+                {socialLinks.map((link, index) => (
+                  <motion.a
+                    key={link.name}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full hover:bg-primary/10 transition-colors"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 + index * 0.1 }}
+                    whileHover={{ y: -2 }}
+                    aria-label={link.name}
+                  >
+                    <div className="text-muted-foreground hover:text-primary transition-colors">
+                      {link.icon}
+                    </div>
+                  </motion.a>
+                ))}
+              </div>
             </motion.div>
           </div>
 
