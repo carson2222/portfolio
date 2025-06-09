@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from "next-themes";
-import { Rocket, Circle } from "lucide-react";
+import { Rocket } from "lucide-react";
 
 type WorkItem = {
   title: string;
