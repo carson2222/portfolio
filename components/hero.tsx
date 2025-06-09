@@ -223,7 +223,7 @@ export default function Hero() {
       url: "https://www.linkedin.com/in/carson-ts-830479321/",
     },
     { name: "Twitter", icon: <Twitter className="h-5 w-5" />, url: "https://x.com/carson3068" },
-    { name: "Email", icon: <Mail className="h-5 w-5" />, url: "mailto:example@example.com" },
+    { name: "Email", icon: <Mail className="h-5 w-5" />, url: "mailto:olaf3068@gmail.com" },
   ];
 
   return (
